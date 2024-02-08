@@ -21,8 +21,6 @@ export const joinRoom = async (rooms: any) => {
     acc.id < cur.id ? acc : cur
   ).id
 
-  console.log(smallestRoomId)
-
   return (await prisma.room.update({
     where: {
       id: Number(smallestRoomId),
