@@ -12,13 +12,9 @@ import { fetcher } from "../utils/fetcher"
 import Chat from "../components/chat"
 import InputMessage from "../components/inputMessage"
 import { RtmChannel } from "agora-rtm-sdk"
-import { useRouter } from "next/router"
 
 const Room = () => {
-  const { route } = useRouter()
-  const [userId, setUserId] = useState<string>(
-    (Math.random() * 1e6 + "").replace(".", "")
-  )
+  const userId = (Math.random() * 1e6 + "").replace(".", "")
   const [remoteUserVideo, setRemoteUserVideo] = useState<IRemoteVideoTrack>()
   const [webcamVideo, setWebcamVideo] = useState<ICameraVideoTrack>()
   const [messages, setMessages] = useState<TMessage[]>([])
@@ -27,23 +23,6 @@ const Room = () => {
   const [showNext, setShowNext] = useState<boolean>(false)
   const [roomId, setRoomId] = useState<string>("")
   const [channel, setChannel] = useState<RtmChannel>()
-
-  useEffect(() => {
-    handleJoin()
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [])
-
-  useEffect(() => {
-    return () => {
-      const disconnect = async () => {
-        if (channel) {
-          channel.leave()
-        }
-      }
-      disconnect()
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [channel])
 
   const getRandomRoom = async (userId: string) => {
     return await fetcher(`/api/rooms?userId=${userId}`, "GET").then(
@@ -73,6 +52,7 @@ const Room = () => {
   }
 
   const handleOtherLeave = async (givenRoomId: number) => {
+    console.log("other leave")
     const body: {} = {
       roomId: givenRoomId,
     }
@@ -113,6 +93,7 @@ const Room = () => {
   }
 
   const handleJoin = async () => {
+    if (!userId) return
     const { generatedRoomId, Rtctoken, RtmToken } = await getRandomRoom(userId)
     handleCreateRoom(generatedRoomId, Rtctoken, RtmToken)
   }
@@ -129,6 +110,23 @@ const Room = () => {
     const { generatedRoomId, Rtctoken, RtmToken } = await getNewRandomRoom()
     handleCreateRoom(generatedRoomId, Rtctoken, RtmToken)
   }
+
+  useEffect(() => {
+    handleJoin()
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
+
+  useEffect(() => {
+    return () => {
+      setRoomId("")
+      const disconnect = async () => {
+        if (channel) {
+          channel.leave()
+        }
+      }
+      disconnect()
+    }
+  }, [channel])
 
   return (
     <div className="flex flex-col justify-center items-center w-screen gap-2 h-screen">

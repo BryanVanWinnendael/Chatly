@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react"
+import { useCallback, useEffect, useRef, useState } from "react"
 import { IoArrowDownCircleOutline } from "react-icons/io5"
 import { TMessage } from "../types/agora"
 
@@ -33,19 +33,18 @@ const Chat: React.FC<Props> = ({ messages, userId }) => {
     }
   }
 
-  const scrollToBottom = () => {
+  const scrollToBottom = useCallback(() => {
     const element = document.querySelector("ul")
 
     if (element && autoScroll) {
       element.scrollTop = element.scrollHeight
       setNewMessage(false)
     } else setNewMessage(true)
-  }
+  }, [autoScroll])
 
   useEffect(() => {
     scrollToBottom()
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [messages])
+  }, [messages, scrollToBottom])
 
   return (
     <div className="h-full w-full relative mt-2 pt-2 ml-5">

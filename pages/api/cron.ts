@@ -23,7 +23,6 @@ export default async function handler(
 ) {
   await deleteAllOpenRooms()
   const rooms = await getAllOpenRooms()
-  console.log(rooms)
 
   res.status(200).end("Cron job ran successfully")
 }
