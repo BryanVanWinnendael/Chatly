@@ -1,5 +1,6 @@
-import { Room } from "@prisma/client"
 import { TRoom } from "../types/room"
+import prisma from "../lib/prisma"
+import { Room } from "@prisma/client"
 
 export const getAllOpenRooms = async () => {
   return await prisma.room.findMany({
